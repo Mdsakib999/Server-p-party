@@ -1,7 +1,7 @@
-import { envVariables } from "../config/envVariables";
+import { envVariables } from "../config/envVariables.js";
 import User from "../modules/user/user.model.js";
 import ApiError from "../utils/ApiError.js";
-import { verifyToken } from "../utils/jwt";
+import { verifyToken } from "../utils/jwt.js";
 
 export const checkAuth =
   (...authRoles) =>
@@ -18,22 +18,15 @@ export const checkAuth =
         envVariables.JWT_ACCESS_SECRET
       );
 
-      const isUserExist = await User.findOne({ email: verifiedToken.email });
+      const user = await User.findOne({ email: verifiedToken.email });
+      if (!user) throw new ApiError(400, "User does not exist");
+      if (!user.isVerified) throw new ApiError(400, "User is not verified");
+      if (user.isDeleted) throw new ApiError(400, "User is deleted");
 
-      if (!isUserExist) {
-        throw new ApiError(400, "User does not exist");
-      }
-      if (!isUserExist.isVerified) {
-        throw new ApiError(400, "User is not verified");
-      }
-
-      if (isUserExist.isDeleted) {
-        throw new ApiError(400, "User is deleted");
+      if (authRoles.length && !authRoles.includes(user.role)) {
+        throw new ApiError(403, "unauthorize access!");
       }
 
-      if (!authRoles.includes(verifiedToken.role)) {
-        throw new ApiError(403, "You are not permitted to view this route!!!");
-      }
       req.user = verifiedToken;
       next();
     } catch (error) {

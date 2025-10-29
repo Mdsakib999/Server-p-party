@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import { model, Schema } from "mongoose";
-import { envVariables } from "../../config/envVariables";
+import { envVariables } from "../../config/envVariables.js";
 
 const authProviderSchema = new Schema(
   {
@@ -16,7 +16,7 @@ const authProviderSchema = new Schema(
 
 const professionalCareerSchema = new Schema(
   {
-    type: { type: String, required: true },
+    type: { type: String },
     timeline: [
       {
         year: { type: Number },
@@ -41,7 +41,7 @@ const activitySchema = new Schema(
 const userSchema = new Schema(
   {
     name: { type: String, required: true },
-    age: { type: Number, required: true },
+    age: { type: Number },
     academicCareer: {
       schools: [{ type: String }],
       college: [{ type: String }],
@@ -69,16 +69,16 @@ const userSchema = new Schema(
         return this.authProvider?.provider === "credential";
       },
     },
-    phoneNumber: { type: String, required: true },
+    phoneNumber: { type: String },
     whatsappNumber: { type: String },
     presentAddress: {
-      country: { type: String, required: true },
-      city: { type: String, required: true },
+      country: { type: String },
+      city: { type: String },
       postalCode: { type: String },
     },
     permanentAddress: {
-      country: { type: String, required: true },
-      city: { type: String, required: true },
+      country: { type: String },
+      city: { type: String },
       postalCode: { type: String },
     },
     facebookProfile: { type: String },
@@ -87,7 +87,6 @@ const userSchema = new Schema(
       enum: ["NEW_PRIMARY", "RENEWAL"],
       default: "NEW_PRIMARY",
     },
-    termsConditionAccepted: { type: Boolean, required: true },
     role: {
       type: String,
       enum: ["USER", "ADMIN", "SUPER_ADMIN"],
@@ -95,7 +94,7 @@ const userSchema = new Schema(
     },
     isVerified: { type: Boolean, default: false },
     isDeleted: { type: Boolean, default: false },
-    authProvider: authProviderSchema,
+    auths: [authProviderSchema],
     personalInfo: {
       birthDate: { type: String },
       birthPlace: { type: String },
@@ -119,13 +118,11 @@ const userSchema = new Schema(
   }
 );
 
-userSchema.index({ email: 1 }, { unique: true });
-
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
 
   try {
-    const salt = await bcrypt.genSalt(envVariables.BCRYPT_SALT_ROUNDS);
+    const salt = await bcrypt.genSalt(Number(envVariables.BCRYPT_SALT_ROUNDS));
     this.password = await bcrypt.hash(this.password, salt);
   } catch (error) {
     next(error);
