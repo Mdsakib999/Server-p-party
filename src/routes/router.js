@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { userRoutes } from "../modules/user/user.route.js";
+import { OtpRoutes } from "../modules/otp/otp.route.js";
 
 export const router = Router();
 
@@ -8,10 +9,10 @@ const moduleRoutes = [
     path: "/user",
     element: userRoutes,
   },
-  //   {
-  //     path: "/auth",
-  //     element: AuthRoutes,
-  //   },
+  {
+    path: "/otp",
+    element: OtpRoutes,
+  },
 ];
 
 moduleRoutes.forEach((route) => {
