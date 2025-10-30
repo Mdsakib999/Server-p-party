@@ -17,7 +17,7 @@ const credentialsLogin = catchAsync(async (req, res, next) => {
             return next(new ApiError(401, info.message))
         }
 
-        const userTokens = await createUserTokens(user)
+        const userTokens = createUserTokens(user)
 
         const { password: pass, ...rest } = user.toObject()
 
@@ -37,7 +37,7 @@ const credentialsLogin = catchAsync(async (req, res, next) => {
     })(req, res, next)
 })
 
-const getNewAccessToken = catchAsync(async (req, res, next) => {
+const getNewAccessToken = catchAsync(async (req, res) => {
     const refreshToken = req.cookies.refreshToken;
 
     if (!refreshToken) {
@@ -56,7 +56,7 @@ const getNewAccessToken = catchAsync(async (req, res, next) => {
     })
 })
 
-const logout = catchAsync(async (req, res, next) => {
+const logout = catchAsync(async (_req, res) => {
 
     res.clearCookie("accessToken", {
         httpOnly: true,
@@ -77,7 +77,8 @@ const logout = catchAsync(async (req, res, next) => {
         data: null,
     })
 })
-const changePassword = catchAsync(async (req, res, next) => {
+
+const changePassword = catchAsync(async (req, res) => {
 
     const newPassword = req.body.newPassword;
     const oldPassword = req.body.oldPassword;
@@ -92,7 +93,8 @@ const changePassword = catchAsync(async (req, res, next) => {
         data: null,
     })
 })
-const resetPassword = catchAsync(async (req, res, next) => {
+
+const resetPassword = catchAsync(async (req, res) => {
 
     const decodedToken = req.user
 
@@ -105,7 +107,8 @@ const resetPassword = catchAsync(async (req, res, next) => {
         data: null,
     })
 })
-const setPassword = catchAsync(async (req, res, next) => {
+
+const setPassword = catchAsync(async (req, res) => {
 
     const decodedToken = req.user
     const { password } = req.body;
@@ -120,7 +123,7 @@ const setPassword = catchAsync(async (req, res, next) => {
     })
 })
 
-const forgotPassword = catchAsync(async (req, res, next) => {
+const forgotPassword = catchAsync(async (req, res) => {
     const { email } = req.body;
 
     await AuthServices.forgotPassword(email);
@@ -133,7 +136,7 @@ const forgotPassword = catchAsync(async (req, res, next) => {
     })
 })
 
-const googleCallbackController = catchAsync(async (req, res, next) => {
+const googleCallbackController = catchAsync(async (req, res) => {
     let redirectTo = req.query.state ? req.query.state : ""
 
     if (redirectTo.startsWith("/")) {

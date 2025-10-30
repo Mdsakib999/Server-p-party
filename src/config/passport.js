@@ -3,6 +3,7 @@ import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as LocalStrategy } from "passport-local";
 import User from "../modules/user/user.model.js";
+import { envVariables } from "./envVariables.js";
 
 passport.use(
   new LocalStrategy(
@@ -58,9 +59,9 @@ passport.use(
 passport.use(
   new GoogleStrategy(
     {
-      clientID: envVars.GOOGLE_CLIENT_ID,
-      clientSecret: envVars.GOOGLE_CLIENT_SECRET,
-      callbackURL: envVars.GOOGLE_CALLBACK_URL,
+      clientID: envVariables.GOOGLE_CLIENT_ID,
+      clientSecret: envVariables.GOOGLE_CLIENT_SECRET,
+      callbackURL: envVariables.GOOGLE_CALLBACK_URL,
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
@@ -73,14 +74,6 @@ passport.use(
         let isUserExist = await User.findOne({ email });
         if (isUserExist && !isUserExist.isVerified) {
           return done(null, false, { message: "User is not verified" });
-        }
-
-        if (
-          isUserExist &&
-          (isUserExist.isActive === IsActive.BLOCKED ||
-            isUserExist.isActive === IsActive.INACTIVE)
-        ) {
-          done(`User is ${isUserExist.isActive}`);
         }
 
         if (isUserExist && isUserExist.isDeleted) {

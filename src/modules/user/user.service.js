@@ -14,11 +14,14 @@ const createUser = async (payload) => {
 
   const user = await User.create({
     email,
+    password,
     auths: [authProvider],
     ...rest,
   });
 
-  return user;
+  const {password: pass, ...remainingData} = user.toObject()
+
+  return remainingData;
 };
 
 const getMe = async (userId) => {

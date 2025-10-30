@@ -1,3 +1,5 @@
+import { envVariables } from "../config/envVariables.js";
+
 const globalErrorHandler = (err, _req, res, _next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
@@ -33,8 +35,8 @@ const globalErrorHandler = (err, _req, res, _next) => {
     success: false,
     status: err.status,
     message: err.message,
-    err: envVars.NODE_ENV === "development" ? err : null,
-    stack: envVars.NODE_ENV === "development" ? err.stack : null,
+    err: envVariables.NODE_ENV === "development" ? err : null,
+    stack: envVariables.NODE_ENV === "development" ? err.stack : null,
   });
 };
 
