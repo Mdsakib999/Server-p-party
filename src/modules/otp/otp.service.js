@@ -56,6 +56,8 @@ const verifyOTP = async (email, otp) => {
     User.updateOne({ email }, { isVerified: true }, { runValidators: true }),
     redisClient.del([redisKey]),
   ]);
+
+  return user;
 };
 
 export const OTPService = {

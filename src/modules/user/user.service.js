@@ -19,7 +19,7 @@ const createUser = async (payload) => {
     ...rest,
   });
 
-  const {password: pass, ...remainingData} = user.toObject()
+  const { password: _, ...remainingData } = user.toObject();
 
   return remainingData;
 };
