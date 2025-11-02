@@ -6,6 +6,7 @@ import { checkAuth } from "../../middlewares/checkAuth.js";
 const router = Router();
 
 router.post("/register", userController.createUser);
+
 router.get("/me", checkAuth(...Roles), userController.getMe);
 
 export const userRoutes = router;

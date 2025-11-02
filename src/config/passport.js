@@ -4,6 +4,7 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as LocalStrategy } from "passport-local";
 import User from "../modules/user/user.model.js";
 import { envVariables } from "./envVariables.js";
+import { OTPService } from "../modules/otp/otp.service.js";
 
 passport.use(
   new LocalStrategy(
@@ -20,6 +21,7 @@ passport.use(
         }
 
         if (!isUserExist.isVerified) {
+          await OTPService.sendOTP(isUserExist?.email, isUserExist?.name);
           return done("User is not verified");
         }
 
@@ -63,7 +65,7 @@ passport.use(
       clientSecret: envVariables.GOOGLE_CLIENT_SECRET,
       callbackURL: envVariables.GOOGLE_CALLBACK_URL,
     },
-    async (accessToken, refreshToken, profile, done) => {
+    async (_accessToken, _refreshToken, profile, done) => {
       try {
         const email = profile.emails?.[0].value;
 
@@ -72,7 +74,9 @@ passport.use(
         }
 
         let isUserExist = await User.findOne({ email });
+
         if (isUserExist && !isUserExist.isVerified) {
+          await OTPService.sendOTP(isUserExist?.email, isUserExist?.name);
           return done(null, false, { message: "User is not verified" });
         }
 

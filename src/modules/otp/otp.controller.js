@@ -1,5 +1,7 @@
 import { catchAsync } from "../../utils/catchAsync.js";
 import { sendResponse } from "../../utils/sendResponse.js";
+import { setAuthCookie } from "../../utils/setCookie.js";
+import { createUserTokens } from "../../utils/userTokens.js";
 import { OTPService } from "./otp.service.js";
 
 const sendOTP = catchAsync(async (req, res) => {
@@ -18,13 +20,19 @@ const sendOTP = catchAsync(async (req, res) => {
 const verifyOTP = catchAsync(async (req, res) => {
   const { email, otp } = req.body;
 
-  await OTPService.verifyOTP(email, otp);
+  const user = await OTPService.verifyOTP(email, otp);
+
+  const userTokens = createUserTokens(user);
+
+  const { password: pass, ...remainingData } = user.toObject();
+
+  setAuthCookie(res, userTokens);
 
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: "OTP verified successfully",
-    data: null,
+    message: "OTP Verified! user logged In successfully",
+    data: remainingData,
   });
 });
 

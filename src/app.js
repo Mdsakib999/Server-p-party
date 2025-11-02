@@ -6,8 +6,9 @@ import globalErrorHandler from "./middlewares/globalErrorHandler.js";
 import { router } from "./routes/router.js";
 import cookieParser from "cookie-parser";
 import expressSession from "express-session";
-import passport from "passport";
 import { envVariables } from "./config/envVariables.js";
+import "../src/config/passport.js";
+import passport from "passport";
 
 const app = express();
 
@@ -39,7 +40,7 @@ app.get("/", (_req, res) => {
 
 app.use("/api/v1", router);
 
-app.use(globalErrorHandler);
 app.use(notFound);
+app.use(globalErrorHandler);
 
 export default app;

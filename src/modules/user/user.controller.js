@@ -1,9 +1,13 @@
 import { catchAsync } from "../../utils/catchAsync.js";
 import { sendResponse } from "../../utils/sendResponse.js";
+import { OTPService } from "../otp/otp.service.js";
 import { UserServices } from "./user.service.js";
 
 const createUser = catchAsync(async (req, res) => {
   const user = await UserServices.createUser(req.body);
+
+  // automatic otp send
+  await OTPService.sendOTP(user?.email, user?.name);
 
   sendResponse(res, {
     success: true,
