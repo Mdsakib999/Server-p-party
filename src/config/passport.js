@@ -46,7 +46,7 @@ passport.use(
         );
 
         if (!isPasswordMatched) {
-          return done(null, false, { message: "Password does not match" });
+          return done(null, false, { message: "Invalid Credentials" });
         }
 
         return done(null, isUserExist);
