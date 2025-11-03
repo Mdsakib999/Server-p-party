@@ -43,3 +43,4 @@ coverage/
 
 # Misc
 package-lock.json
+.vercel

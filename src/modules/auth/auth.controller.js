@@ -92,9 +92,7 @@ const changePassword = catchAsync(async (req, res) => {
 });
 
 const resetPassword = catchAsync(async (req, res) => {
-  const decodedToken = req.user;
-
-  await AuthServices.resetPassword(req.body, decodedToken);
+  await AuthServices.resetPassword(req.body);
 
   sendResponse(res, {
     success: true,

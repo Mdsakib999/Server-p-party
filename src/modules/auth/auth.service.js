@@ -5,6 +5,7 @@ import ApiError from "../../utils/ApiError.js";
 import { envVariables } from "../../config/envVariables.js";
 import { sendForgotPasswordEmail } from "../../utils/Email/sendEmail.js";
 import { createNewAccessTokenWithRefreshToken } from "../../utils/userTokens.js";
+import { redisClient } from "../../config/redisClient.js";
 
 const getNewAccessToken = async (refreshToken) => {
   const newAccessToken = await createNewAccessTokenWithRefreshToken(
@@ -15,24 +16,35 @@ const getNewAccessToken = async (refreshToken) => {
   };
 };
 
-const resetPassword = async (payload, decodedToken) => {
-  if (payload.id != decodedToken.userId) {
+const resetPassword = async (payload) => {
+  const redisKey = `reset-token:${payload?.token}`;
+  const storedUserId = await redisClient.get(redisKey);
+
+  console.log(redisKey, storedUserId, payload);
+
+  if (!storedUserId) {
+    throw new ApiError(401, "Invalid or expired reset token");
+  }
+
+  if (payload?.id !== storedUserId) {
     throw new ApiError(401, "You can not reset your password");
   }
 
-  const isUserExist = await User.findById(decodedToken.userId);
+  const isUserExist = await User.findById({ _id: payload?.id });
+  console.log(isUserExist);
+
   if (!isUserExist) {
-    throw new ApiError(401, "User does not exist");
+    throw new ApiError(404, "User does not exist");
   }
 
-  const hashedPassword = await bcrypt.hash(
-    payload.newPassword,
-    Number(envVariables.BCRYPT_SALT_ROUNDS)
-  );
-
-  isUserExist.password = hashedPassword;
+  // will be hashed by pre save hook
+  isUserExist.password = payload?.newPassword;
 
   await isUserExist.save();
+
+  await redisClient.del(redisKey);
+
+  return { message: "Password reset successful" };
 };
 
 const setPassword = async (userId, plainPassword) => {
@@ -110,6 +122,14 @@ const forgotPassword = async (email) => {
 
   const resetToken = jwt.sign(jwtPayload, envVariables.JWT_ACCESS_SECRET, {
     expiresIn: "10m",
+  });
+
+  const redisKey = `reset-token:${resetToken}`;
+  await redisClient.set(redisKey, isUserExist._id.toString(), {
+    expiration: {
+      type: "EX",
+      value: 600,
+    },
   });
 
   const resetLink = `${envVariables.CLIENT_URL}/reset-password?id=${isUserExist._id}&token=${resetToken}`;
