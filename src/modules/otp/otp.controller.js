@@ -24,7 +24,7 @@ const verifyOTP = catchAsync(async (req, res) => {
 
   const userTokens = createUserTokens(user);
 
-  const { password: pass, ...remainingData } = user.toObject();
+  const { password: _, ...remainingData } = user.toObject();
 
   setAuthCookie(res, userTokens);
 

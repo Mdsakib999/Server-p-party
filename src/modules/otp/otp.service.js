@@ -25,14 +25,13 @@ const sendOTP = async (email, name) => {
       value: 120,
     },
   });
-  console.log("FROM SENDOTP", redisKey);
 
   await sendOTPEmail(email, name, otp);
 };
 
 const verifyOTP = async (email, otp) => {
   const user = await User.findOne({ email });
-  console.log(user);
+
   if (!user) {
     throw new ApiError(404, "User Not Found");
   }
@@ -42,10 +41,9 @@ const verifyOTP = async (email, otp) => {
   }
 
   const redisKey = `otp:${email}`;
-  console.log("FROM VERIFY OTP", redisKey);
 
   const savedOTP = await redisClient.get(redisKey);
-  console.log("SAVED OTP FROM veirfy OTP", savedOTP);
+
   if (!savedOTP) {
     throw new ApiError(401, "Invalid OTP");
   }
