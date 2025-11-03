@@ -20,8 +20,6 @@ const resetPassword = async (payload) => {
   const redisKey = `reset-token:${payload?.token}`;
   const storedUserId = await redisClient.get(redisKey);
 
-  console.log(redisKey, storedUserId, payload);
-
   if (!storedUserId) {
     throw new ApiError(401, "Invalid or expired reset token");
   }
@@ -31,7 +29,6 @@ const resetPassword = async (payload) => {
   }
 
   const isUserExist = await User.findById({ _id: payload?.id });
-  console.log(isUserExist);
 
   if (!isUserExist) {
     throw new ApiError(404, "User does not exist");
