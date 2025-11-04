@@ -18,6 +18,7 @@ export const envVariables = {
   SUPER_ADMIN_EMAIL: process.env.SUPER_ADMIN_EMAIL,
   SUPER_ADMIN_PASSWORD: process.env.SUPER_ADMIN_PASSWORD,
   EXPRESS_SESSION_SECRET: process.env.EXPRESS_SESSION_SECRET,
+
   REDIS_HOST: process.env.REDIS_HOST,
   REDIS_PORT: process.env.REDIS_PORT,
   REDIS_USERNAME: process.env.REDIS_USERNAME,
@@ -27,4 +28,7 @@ export const envVariables = {
   SMTP_PORT: process.env.SMTP_PORT,
   SMTP_USER: process.env.SMTP_USER,
   SMTP_PASS: process.env.SMTP_PASS,
+  CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
+  CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
+  CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
 };
