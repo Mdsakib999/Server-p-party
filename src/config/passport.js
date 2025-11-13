@@ -103,7 +103,11 @@ passport.use(
         user = await User.create({
           email,
           name: profile.displayName,
-          photos: profile.photos?.map((p) => p.value) || [],
+          photos:
+            profile.photos?.map((p) => ({
+              url: p.value,
+              public_id: null,
+            })) || [],
           role: "USER",
           isVerified: true,
           auths: [

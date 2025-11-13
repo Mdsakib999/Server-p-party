@@ -1,14 +1,17 @@
-import express from "express";
 import cors from "cors";
 import morgan from "morgan";
-import notFound from "./middlewares/notFound.js";
-import globalErrorHandler from "./middlewares/globalErrorHandler.js";
-import { router } from "./routes/router.js";
-import cookieParser from "cookie-parser";
-import expressSession from "express-session";
-import { envVariables } from "./config/envVariables.js";
-import "../src/config/passport.js";
+import helmet from "helmet";
+import express from "express";
 import passport from "passport";
+import "../src/config/passport.js";
+import compression from "compression";
+import cookieParser from "cookie-parser";
+import { router } from "./routes/router.js";
+import expressSession from "express-session";
+import notFound from "./middlewares/notFound.js";
+import { limiter } from "./middlewares/rateLimiter.js";
+import { envVariables } from "./config/envVariables.js";
+import globalErrorHandler from "./middlewares/globalErrorHandler.js";
 
 const app = express();
 
@@ -24,8 +27,10 @@ app.use(passport.session());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 app.use(cookieParser());
+
+app.use(helmet());
+
 app.use(
   cors({
     origin: envVariables.CLIENT_URL,
@@ -34,9 +39,11 @@ app.use(
 );
 
 app.use(morgan("dev"));
+app.use(limiter);
+app.use(compression());
 
 app.get("/", (_req, res) => {
-  res.status(200).json({ message: "HELLO FROM DESH NETA TARIQUE RAHMAN" });
+  res.status(200).json({ message: "SALAM FROM DESH NETA TARIQUE RAHMAN" });
 });
 
 app.use("/api/v1", router);
