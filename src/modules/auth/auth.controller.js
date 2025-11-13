@@ -91,27 +91,15 @@ const changePassword = catchAsync(async (req, res) => {
   });
 });
 
-const resetPassword = catchAsync(async (req, res) => {
-  await AuthServices.resetPassword(req.body);
-
-  sendResponse(res, {
-    success: true,
-    statusCode: 200,
-    message: "Password Changed Successfully",
-    data: null,
-  });
-});
-
 const setPassword = catchAsync(async (req, res) => {
   const decodedToken = req.user;
   const { password } = req.body;
-
   await AuthServices.setPassword(decodedToken.userId, password);
 
   sendResponse(res, {
     success: true,
     statusCode: 200,
-    message: "Password Changed Successfully",
+    message: "Password set Successfully",
     data: null,
   });
 });
@@ -152,7 +140,6 @@ export const AuthControllers = {
   credentialsLogin,
   getNewAccessToken,
   logout,
-  resetPassword,
   setPassword,
   forgotPassword,
   changePassword,
