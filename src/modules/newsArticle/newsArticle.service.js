@@ -1,6 +1,7 @@
 import ApiError from "../../utils/ApiError.js";
 import NewsArticle from "./newsArticle.model.js";
 import { generateUniqueSlug } from "../../utils/generateUniqueSlug.js";
+import { deleteFromCloudinary } from "../../utils/uploadToCloudinary.js";
 
 const createArticle = async (payload) => {
   if (!payload?.title) throw new ApiError(400, "Title is required");
@@ -61,8 +62,11 @@ const getArticleBySlug = async (slug) => {
   return article;
 };
 
-const updateArticleById = async (id, payload) => {
-  if (!id) throw new ApiError(400, "Article id is required");
+const updateArticle = async (id, payload) => {
+  const article = await NewsArticle.findById(id);
+  if (!article) {
+    throw new ApiError(404, "article Not Found");
+  }
 
   if (payload?.title) {
     payload.slug = await generateUniqueSlug(payload.title);
@@ -76,16 +80,24 @@ const updateArticleById = async (id, payload) => {
   return updated;
 };
 
-const deleteArticleById = async (id) => {
-  if (!id) throw new ApiError(400, "Article id is required");
-  const doc = await NewsArticle.findByIdAndDelete(id);
-  return doc;
+const deleteArticle = async (id) => {
+  const article = await NewsArticle.findById(id);
+
+  if (!article) throw new ApiError(404, "Article Not found");
+
+  if (article?.images?.length > 0) {
+    const ids = article.images.map((img) => img?.public_id);
+    await deleteFromCloudinary(ids);
+  }
+
+  await NewsArticle.deleteOne({ _id: id });
+  return true;
 };
 
 export const NewsArticleServices = {
   createArticle,
   getAllArticles,
   getArticleBySlug,
-  updateArticleById,
-  deleteArticleById,
+  updateArticle,
+  deleteArticle,
 };
