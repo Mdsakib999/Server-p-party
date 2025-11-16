@@ -1,7 +1,7 @@
 {
   "name": "mern-backend",
   "version": "1.0.0",
-  "description": "Backend for MERN project following MODULAR MVC architecture",
+  "description": "Backend for MERN project following Modular MVC architecture",
   "main": "src/server.js",
   "type": "module",
   "scripts": {

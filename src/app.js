@@ -22,6 +22,7 @@ app.use(
     saveUninitialized: false,
   })
 );
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -43,7 +44,7 @@ app.use(limiter);
 app.use(compression());
 
 app.get("/", (_req, res) => {
-  res.status(200).json({ message: "SALAM FROM DESH NETA TARIQUE RAHMAN" });
+  res.status(200).json({ message: "HELLO FROM DESH NETA TARIQUE RAHMAN" });
 });
 
 app.use("/api/v1", router);

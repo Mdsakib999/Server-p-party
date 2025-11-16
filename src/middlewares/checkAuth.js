@@ -21,10 +21,14 @@ export const checkAuth =
       const user = await User.findOne({ email: verifiedToken.email });
       if (!user) throw new ApiError(400, "User does not exist");
       if (!user.isVerified) throw new ApiError(400, "User is not verified");
-      if (user.isDeleted) throw new ApiError(400, "User is deleted");
+      if (user.isDeleted)
+        throw new ApiError(
+          400,
+          "You cant access your account! contact support"
+        );
 
       if (authRoles.length && !authRoles.includes(user.role)) {
-        throw new ApiError(403, "unauthorize access!");
+        throw new ApiError(403, "UNAUTHORIZE ACCESS!");
       }
 
       req.user = verifiedToken;

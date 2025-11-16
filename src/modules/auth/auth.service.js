@@ -16,33 +16,6 @@ const getNewAccessToken = async (refreshToken) => {
   };
 };
 
-// const resetPassword = async (payload) => {
-//   const redisKey = `reset-token:${payload?.token}`;
-//   const storedUserId = await redisClient.get(redisKey);
-
-//   if (!storedUserId) {
-//     throw new ApiError(401, "Invalid or expired reset token");
-//   }
-
-//   if (payload?.id !== storedUserId) {
-//     throw new ApiError(401, "You can not reset your password");
-//   }
-
-//   const isUserExist = await User.findById({ _id: payload?.id });
-
-//   if (!isUserExist) {
-//     throw new ApiError(404, "User does not exist");
-//   }
-
-//   isUserExist.password = payload?.newPassword;
-
-//   await isUserExist.save();
-
-//   await redisClient.del(redisKey);
-
-//   return { message: "Password reset successful" };
-// };
-
 const setPassword = async (userId, plainPassword) => {
   const user = await User.findById(userId);
   if (!user) {
@@ -57,7 +30,7 @@ const setPassword = async (userId, plainPassword) => {
   ) {
     throw new ApiError(
       400,
-      "You have already set you password. Now you can change the password from your profile change password option"
+      "You have already set you password. Now you can change the password from your account's change password option"
     );
   }
 
@@ -79,7 +52,7 @@ const changePassword = async (oldPassword, newPassword, decodedToken) => {
   const user = await User.findById(decodedToken.userId);
 
   const isOldPasswordMatch = await bcrypt.compare(oldPassword, user.password);
-  console.log("MATCH KORSE?==>", isOldPasswordMatch);
+
   if (!isOldPasswordMatch) {
     throw new ApiError(403, "current Password does not match");
   }
@@ -101,7 +74,7 @@ const forgotPassword = async (email) => {
   }
 
   if (isUserExist.isDeleted) {
-    throw new ApiError(400, "User is deleted");
+    throw new ApiError(400, "You cant access your account! contact support");
   }
 
   const jwtPayload = {
