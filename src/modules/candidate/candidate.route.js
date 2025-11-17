@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { CandidateController } from "./candidate.controller.js";
 import { checkAuth } from "../../middlewares/checkAuth.js";
+import { handleUpload } from "../../config/multer.js";
 
 const router = Router();
 
@@ -8,6 +9,7 @@ const router = Router();
 router.post(
   "/create-candidate",
   checkAuth,
+  handleUpload("array", "photos", 4),
   CandidateController.createCandidate
 );
 

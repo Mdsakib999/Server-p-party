@@ -1,79 +1,96 @@
 import { Schema, model } from "mongoose";
 
-const timelineSchema = new Schema({
-  year: Number,
-  event: String,
-});
 
-const professionalCareerSchema = new Schema({
-  type: String,
-  timeline: [timelineSchema],
-});
 
 const personalInfoSchema = new Schema({
-  birthDate: String,
-  birthPlace: String,
+  birth_date: String,
+  birth_place: String,
   nationality: String,
-  maritalStatus: String,
-  spouse: String,
-  children: [String],
+  website_or_social: [String],
 });
 
 const academicCareerSchema = new Schema({
   schools: [String],
   college: String,
-  university: String,
-  degree: String,
+  university: [String],
+  degree: [String],
 });
 
-const activitySchema = new Schema({
-  title: String,
-  date: String,
-  description: String,
+const politicalCareerSchema = new Schema({
+  year: String,
+  event: String,
 });
 
-const controversySchema = new Schema({
-  title: String,
-  details: String,
-  verdict: String,
+const electionConstituencySchema = new Schema({
+  actual_place_name: String,
+  election_area_name: String,
 });
 
-const socialLinksSchema = new Schema({
-  website: String,
-});
-
-const recentActivitySchema = new Schema({
-  image: String,
-  title: String,
-  channel: String,
-  date: String,
+const photoSchema = new Schema({
+  secure_url: String,
+  public_id: String,
+  url: String,
 });
 
 const candidateSchema = new Schema(
   {
-    _id: Number,
     name: {
       type: String,
       required: true,
     },
-    position: String,
-    roleCategory: String,
-    portfolio: String,
-    designations: [String],
-    personalInfo: personalInfoSchema,
-    academicCareer: academicCareerSchema,
-    professionalCareer: [professionalCareerSchema],
-    electionConstituency: String,
-    activities: [activitySchema],
-    highlights: [String],
-    controversies: [controversySchema],
-    otherIncomeSources: [String],
-    socialLinks: socialLinksSchema,
-    photos: [String],
-    overallSummary: String,
-    source_url: String,
-    lastUpdated: Date,
-    recentActivities: [recentActivitySchema],
+    position: {
+      type: String,
+      required: true,
+    },
+    category: {
+      type: String,
+      required: true,
+    },
+    portfolio: {
+      type: [String],
+      required: true,
+    },
+    designations: {
+      type: [String],
+      required: true,
+    },
+    personal_info: {
+      type: personalInfoSchema,
+      required: true,
+    },
+    academic_career: {
+      type: academicCareerSchema,
+    },
+    business_income_source_professional_career: {
+      type: [String],
+    },
+    political_career: {
+      type: [politicalCareerSchema],
+    },
+    election_constituencies: {
+      type: [electionConstituencySchema],
+      required: true,
+    },
+    life_activities: String,
+    other_income_sources: [String],
+    social_links: [String],
+    photos: {
+      type: [photoSchema],
+      required: true,
+    },
+    overall_summary: {
+      type: String,
+      required: true,
+    },
+    district: {
+      type: [String],
+      required: true,
+    },
+    division: {
+      type: [String],
+      required: true,
+    },
+    metadata: Schema.Types.Mixed,
   },
   {
     timestamps: true,

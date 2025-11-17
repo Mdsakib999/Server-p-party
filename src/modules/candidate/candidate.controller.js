@@ -1,9 +1,60 @@
 import { CandidateService } from "./candidate.service.js";
 import { catchAsync } from "../../utils/catchAsync.js";
 import { sendResponse } from "../../utils/sendResponse.js";
+import { uploadToCloudinary } from "../../utils/uploadToCloudinary.js";
 
 const createCandidate = catchAsync(async (req, res) => {
-  const result = await CandidateService.createCandidate(req.body);
+  const files = req.files || [];
+
+  const uploadedPhotos = files.length
+    ? await Promise.all(
+        files.map((file) => uploadToCloudinary(file.buffer, "candidates"))
+      )
+    : [];
+
+  // Require at least one photo
+  if (!uploadedPhotos.length) {
+    return res.status(400).json({
+      success: false,
+      message: "At least one photo is required",
+    });
+  }
+
+  // Parse JSON strings from FormData
+  const payload = { ...req.body };
+
+  const jsonFields = [
+    "portfolio",
+    "designations",
+    "personal_info",
+    "academic_career",
+    "business_income_source_professional_career",
+    "political_career",
+    "election_constituencies",
+    "other_income_sources",
+    "social_links",
+    "district",
+    "division",
+  ];
+
+  jsonFields.forEach((field) => {
+    if (payload[field] && typeof payload[field] === "string") {
+      try {
+        payload[field] = JSON.parse(payload[field]);
+      } catch (e) {
+        console.error(`Error parsing ${field}:`, e);
+      }
+    }
+  });
+
+  payload.photos = uploadedPhotos.map((photo) => ({
+    secure_url: photo.secure_url || photo.url,
+    public_id: photo.public_id,
+    url: photo.url,
+  }));
+
+  const result = await CandidateService.createCandidate(payload);
+  console.log("Created Candidate:", result);
 
   sendResponse(res, {
     statusCode: 201,
