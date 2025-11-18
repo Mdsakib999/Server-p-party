@@ -8,14 +8,22 @@ const router = Router();
 // Routes requiring admin access
 router.post(
   "/create-candidate",
-  checkAuth,
+  checkAuth(...["ADMIN", "SUPER_ADMIN"]),
   handleUpload("array", "photos", 4),
   CandidateController.createCandidate
 );
 
-router.patch("/:id", checkAuth, CandidateController.updateCandidate);
+router.patch(
+  "/:id",
+  checkAuth(...["ADMIN", "SUPER_ADMIN"]),
+  CandidateController.updateCandidate
+);
 
-router.delete("/:id", checkAuth, CandidateController.deleteCandidate);
+router.delete(
+  "/:id",
+  checkAuth(...["ADMIN", "SUPER_ADMIN"]),
+  CandidateController.deleteCandidate
+);
 
 // Public routes
 router.get("/", CandidateController.getAllCandidates);

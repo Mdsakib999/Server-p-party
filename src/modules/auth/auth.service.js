@@ -16,55 +16,23 @@ const getNewAccessToken = async (refreshToken) => {
   };
 };
 
-const resetPassword = async (payload) => {
-  const redisKey = `reset-token:${payload?.token}`;
-  const storedUserId = await redisClient.get(redisKey);
-
-  if (!storedUserId) {
-    throw new ApiError(401, "Invalid or expired reset token");
-  }
-
-  if (payload?.id !== storedUserId) {
-    throw new ApiError(401, "You can not reset your password");
-  }
-
-  const isUserExist = await User.findById({ _id: payload?.id });
-
-  if (!isUserExist) {
-    throw new ApiError(404, "User does not exist");
-  }
-
-  // will be hashed by pre save hook
-  isUserExist.password = payload?.newPassword;
-
-  await isUserExist.save();
-
-  await redisClient.del(redisKey);
-
-  return { message: "Password reset successful" };
-};
-
 const setPassword = async (userId, plainPassword) => {
   const user = await User.findById(userId);
-
   if (!user) {
     throw new ApiError(404, "User not found");
   }
 
   if (
     user.password &&
-    user.auths.some((providerObject) => providerObject.provider === "google")
+    user.auths.some(
+      (providerObject) => providerObject.provider === "credential"
+    )
   ) {
     throw new ApiError(
       400,
-      "You have already set you password. Now you can change the password from your profile password update"
+      "You have already set you password. Now you can change the password from your account's change password option"
     );
   }
-
-  const hashedPassword = await bcrypt.hash(
-    plainPassword,
-    Number(envVariables.BCRYPT_SALT_ROUNDS)
-  );
 
   const credentialProvider = {
     provider: "credential",
@@ -73,7 +41,7 @@ const setPassword = async (userId, plainPassword) => {
 
   const auths = [...user.auths, credentialProvider];
 
-  user.password = hashedPassword;
+  user.password = plainPassword;
 
   user.auths = auths;
 
@@ -84,16 +52,14 @@ const changePassword = async (oldPassword, newPassword, decodedToken) => {
   const user = await User.findById(decodedToken.userId);
 
   const isOldPasswordMatch = await bcrypt.compare(oldPassword, user.password);
+
   if (!isOldPasswordMatch) {
-    throw new ApiError(403, "Old Password does not match");
+    throw new ApiError(403, "current Password does not match");
   }
 
-  user.password = await bcrypt.hash(
-    newPassword,
-    Number(envVariables.BCRYPT_SALT_ROUNDS)
-  );
+  user.password = newPassword;
 
-  user.save();
+  await user.save();
 };
 
 const forgotPassword = async (email) => {
@@ -108,7 +74,7 @@ const forgotPassword = async (email) => {
   }
 
   if (isUserExist.isDeleted) {
-    throw new ApiError(400, "User is deleted");
+    throw new ApiError(400, "You cant access your account! contact support");
   }
 
   const jwtPayload = {
@@ -138,6 +104,5 @@ export const AuthServices = {
   getNewAccessToken,
   changePassword,
   setPassword,
-  resetPassword,
   forgotPassword,
 };

@@ -10,12 +10,12 @@ router.post("/register", userController.createUser);
 
 router.get("/me", checkAuth(...Roles), userController.getMe);
 
-// router.put(
-//   "/:id",
-//   checkAuth(...Roles),
-//   handleUpload("single", "image"),
-//   userController.updateUser
-// );
+router.put(
+  "/:id",
+  checkAuth(...Roles),
+  handleUpload("single", "image"),
+  userController.updateUser
+);
 
 // router.delete("/:id", checkAuth(...Roles), userController.deleteUser);
 

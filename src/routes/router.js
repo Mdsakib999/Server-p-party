@@ -4,6 +4,7 @@ import { OtpRoutes } from "../modules/otp/otp.route.js";
 import { AuthRoutes } from "../modules/auth/auth.routes.js";
 import { newsArticleRoutes } from "../modules/newsArticle/newsArticle.route.js";
 import { CandidateRoutes } from "../modules/candidate/candidate.route.js";
+import { activityRoutes } from "../modules/activity/activity.route.js";
 
 export const router = Router();
 
@@ -27,6 +28,10 @@ const moduleRoutes = [
   {
     path: "/candidates",
     element: CandidateRoutes,
+  },
+  {
+    path: "/activity",
+    element: activityRoutes,
   },
 ];
 

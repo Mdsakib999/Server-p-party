@@ -54,7 +54,6 @@ const createCandidate = catchAsync(async (req, res) => {
   }));
 
   const result = await CandidateService.createCandidate(payload);
-  console.log("Created Candidate:", result);
 
   sendResponse(res, {
     statusCode: 201,

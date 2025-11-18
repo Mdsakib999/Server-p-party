@@ -14,6 +14,14 @@ const authProviderSchema = new Schema(
   { _id: false, versionKey: false }
 );
 
+const photoSchema = new Schema(
+  {
+    url: { type: String, required: true },
+    public_id: { type: String, default: null },
+  },
+  { _id: false, versionKey: false }
+);
+
 const userSchema = new Schema(
   {
     name: { type: String, required: true },
@@ -39,7 +47,7 @@ const userSchema = new Schema(
     isVerified: { type: Boolean, default: false },
     isDeleted: { type: Boolean, default: false },
     auths: [authProviderSchema],
-    photos: [{ type: String }],
+    photos: [photoSchema],
   },
   {
     timestamps: true,
