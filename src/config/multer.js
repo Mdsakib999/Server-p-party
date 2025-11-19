@@ -34,7 +34,7 @@ export const handleUpload = (type, fieldName, maxCount) => {
             message: "File too large. Max size is 5MB.",
           });
         }
-
+        console.log("err==>", err);
         return sendResponse(res, {
           statusCode: 400,
           success: false,

@@ -24,8 +24,8 @@ const activitySchema = new Schema(
       required: true,
     },
     featuredImage: {
-      type: [ImageSchema],
-      default: [],
+      type: ImageSchema,
+      required: true,
     },
     content: {
       type: String,

@@ -6,9 +6,7 @@ const createActivity = async (req, res, next) => {
   try {
     const payload = req.body || {};
 
-    const files = req.files || [];
-
-    const created = await ActivityService.createActivity(payload, files);
+    const created = await ActivityService.createActivity(payload, req.file);
     return sendResponse(res, {
       statusCode: 201,
       success: true,
@@ -56,9 +54,9 @@ const updateActivity = async (req, res, next) => {
   try {
     const { id } = req.params;
     const payload = req.body || {};
-    const files = req.files || [];
+    const file = req.file || null;
 
-    const updated = await ActivityService.updateActivity(id, payload, files);
+    const updated = await ActivityService.updateActivity(id, payload, file);
 
     return sendResponse(res, {
       statusCode: 200,
