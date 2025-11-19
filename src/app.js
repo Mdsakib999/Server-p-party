@@ -30,6 +30,17 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// CORS configuration
+const corsOptions = {
+  origin: envVariables.CLIENT_URL || "http://localhost:5173",
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization", "x-requested-with"],
+  exposedHeaders: ["Content-Range", "X-Content-Range"],
+  maxAge: 600,
+};
+
+app.use(cors(corsOptions));
 app.use(helmet());
 
 app.use(
