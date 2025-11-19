@@ -1,43 +1,45 @@
+import slugify from "slugify";
 import ApiError from "../../utils/ApiError.js";
-import { generateUniqueSlug } from "../../utils/generateUniqueSlug.js";
 import {
   deleteFromCloudinary,
   uploadToCloudinary,
 } from "../../utils/uploadToCloudinary.js";
 import Activity from "./activity.model.js";
 
-const createActivity = async (payload, files = []) => {
+const createActivity = async (payload, file) => {
   if (!payload.title) throw new ApiError(400, "Title is required");
   if (!payload.category) throw new ApiError(400, "Category is required");
   if (!payload.content) throw new ApiError(400, "Content is required");
+  if (!file || !file.buffer) throw new ApiError(400, "Featured image is required");
 
-  const slug = await generateUniqueSlug(payload.title);
+  const processed = payload.title.trim().normalize("NFC");
+
+  let slug = slugify(processed, {
+    lower: false,
+    strict: false,
+    locale: "bn",
+  });
+
+  if (!slug) {
+    slug = processed.replace(/\s+/g, "-");
+  }
+
+  const uploadResult = await uploadToCloudinary(file.buffer, "activities");
+  if (!uploadResult || !uploadResult.url) {
+    throw new ApiError(500, "Failed to upload image");
+  }
 
   const doc = {
     title: payload.title,
     slug,
     category: payload.category,
-    featuredImage: null,
+    featuredImage: {
+      url: uploadResult.url,
+      public_id: uploadResult.public_id,
+    },
     content: payload.content,
     videoLink: payload.videoLink || null,
   };
-
-  if (files.length > 0) {
-    const file = files[0];
-    if (!file || !file.buffer) {
-      throw new ApiError(400, "Invalid file upload");
-    }
-
-    const uploadResult = await uploadToCloudinary(file.buffer, "activities");
-    if (!uploadResult || !uploadResult.url) {
-      throw new ApiError(500, "Failed to upload image");
-    }
-
-    doc.featuredImage = {
-      url: uploadResult.url,
-      public_id: uploadResult.public_id,
-    };
-  }
 
   const created = await Activity.create(doc);
   return created;
@@ -54,14 +56,19 @@ const getActivityBySlug = async (slug) => {
   return activity;
 };
 
-const updateActivity = async (id, payload, files = []) => {
+const updateActivity = async (id, payload, file) => {
   if (!id) throw new ApiError(400, "Id is required");
 
   const activity = await Activity.findById(id);
   if (!activity) throw new ApiError(404, "Activity not found");
 
   if (payload.title && payload.title !== activity.title) {
-    const newSlug = await generateUniqueSlug(payload.title);
+    const newSlug = slugify(payload.title, {
+      lower: false,
+      strict: false,
+      locale: "bn",
+    });
+
     activity.slug = newSlug;
     activity.title = payload.title;
   }
@@ -70,8 +77,7 @@ const updateActivity = async (id, payload, files = []) => {
   if (payload.content) activity.content = payload.content;
   if (payload.videoLink !== undefined) activity.videoLink = payload.videoLink;
 
-  if (files.length > 0) {
-    const file = files[0];
+  if (file) {
     if (!file || !file.buffer) throw new ApiError(400, "Invalid file upload");
 
     const uploadResult = await uploadToCloudinary(file.buffer, "activities");
