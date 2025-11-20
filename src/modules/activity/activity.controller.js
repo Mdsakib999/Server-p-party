@@ -1,8 +1,9 @@
 import ApiError from "../../utils/ApiError.js";
+import { catchAsync } from "../../utils/catchAsync.js";
 import { sendResponse } from "../../utils/sendResponse.js";
 import { ActivityService } from "./activity.service.js";
 
-const createActivity = async (req, res, next) => {
+const createActivity = catchAsync(async (req, res, next) => {
   try {
     const payload = req.body || {};
 
@@ -16,9 +17,9 @@ const createActivity = async (req, res, next) => {
   } catch (err) {
     return next(err);
   }
-};
+});
 
-const getAllActivities = async (req, res, next) => {
+const getAllActivities = catchAsync(async (req, res, next) => {
   try {
     const activities = await ActivityService.getAllActivities();
     return sendResponse(res, {
@@ -30,9 +31,9 @@ const getAllActivities = async (req, res, next) => {
   } catch (err) {
     return next(err);
   }
-};
+});
 
-const getActivityBySlug = async (req, res, next) => {
+const getActivityBySlug = catchAsync(async (req, res, next) => {
   try {
     const { slug } = req.params;
     const activity = await ActivityService.getActivityBySlug(slug);
@@ -48,9 +49,9 @@ const getActivityBySlug = async (req, res, next) => {
   } catch (err) {
     return next(err);
   }
-};
+});
 
-const updateActivity = async (req, res, next) => {
+const updateActivity = catchAsync(async (req, res, next) => {
   try {
     const { id } = req.params;
     const payload = req.body || {};
@@ -67,9 +68,9 @@ const updateActivity = async (req, res, next) => {
   } catch (err) {
     return next(err);
   }
-};
+});
 
-const deleteActivity = async (req, res, next) => {
+const deleteActivity = catchAsync(async (req, res, next) => {
   try {
     const { id } = req.params;
     await ActivityService.deleteActivity(id);
@@ -82,7 +83,7 @@ const deleteActivity = async (req, res, next) => {
   } catch (err) {
     return next(err);
   }
-};
+});
 
 export const ActivityController = {
   createActivity,
