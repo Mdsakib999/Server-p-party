@@ -2,10 +2,6 @@ import ApiError from "../../utils/ApiError.js";
 import Candidate from "./candidate.model.js";
 
 const createCandidate = async (payload) => {
-  // Remove _id if present (let MongoDB generate it)
-  delete payload._id;
-
-  // Create new candidate
   try {
     const candidate = await Candidate.create(payload);
     return candidate;
@@ -31,11 +27,29 @@ const getCandidateById = async (id) => {
 };
 
 const updateCandidate = async (id, payload) => {
-  const candidate = await Candidate.findByIdAndUpdate(
-    id,
-    payload,
-    { new: true, runValidators: true }
-  );
+  if (payload.new_photos && payload.new_photos.length > 0) {
+    if (payload.existing_photos) {
+      payload.photos = [
+        ...(payload.existing_photos || []),
+        ...payload.new_photos,
+      ];
+    } else {
+      const existing = await Candidate.findById(id);
+      if (existing) {
+        payload.photos = [...(existing.photos || []), ...payload.new_photos];
+      } else {
+        payload.photos = payload.new_photos;
+      }
+    }
+    delete payload.new_photos;
+  } else if (payload.existing_photos) {
+    payload.photos = payload.existing_photos;
+  }
+
+  const candidate = await Candidate.findByIdAndUpdate(id, payload, {
+    new: true,
+    runValidators: true,
+  });
 
   if (!candidate) {
     throw new ApiError(404, "Candidate not found");

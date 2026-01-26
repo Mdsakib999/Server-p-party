@@ -10,19 +10,20 @@ router.post(
   "/create-candidate",
   checkAuth(...["ADMIN", "SUPER_ADMIN"]),
   handleUpload("array", "photos", 4),
-  CandidateController.createCandidate
+  CandidateController.createCandidate,
 );
 
 router.patch(
   "/:id",
   checkAuth(...["ADMIN", "SUPER_ADMIN"]),
-  CandidateController.updateCandidate
+  handleUpload("array", "photos", 4),
+  CandidateController.updateCandidate,
 );
 
 router.delete(
   "/:id",
   checkAuth(...["ADMIN", "SUPER_ADMIN"]),
-  CandidateController.deleteCandidate
+  CandidateController.deleteCandidate,
 );
 
 // Public routes

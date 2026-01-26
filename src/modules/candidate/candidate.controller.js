@@ -3,29 +3,20 @@ import { catchAsync } from "../../utils/catchAsync.js";
 import { sendResponse } from "../../utils/sendResponse.js";
 import { uploadToCloudinary } from "../../utils/uploadToCloudinary.js";
 
-const createCandidate = catchAsync(async (req, res) => {
+const processCandidatePayload = async (req) => {
   const files = req.files || [];
 
   const uploadedPhotos = files.length
     ? await Promise.all(
-        files.map((file) => uploadToCloudinary(file.buffer, "candidates"))
+        files.map((file) => uploadToCloudinary(file.buffer, "candidates")),
       )
     : [];
 
-  // Require at least one photo
-  if (!uploadedPhotos.length) {
-    return res.status(400).json({
-      success: false,
-      message: "At least one photo is required",
-    });
-  }
-
-  // Parse JSON strings from FormData
   const payload = { ...req.body };
 
   const jsonFields = [
     "portfolio",
-    "designations",
+    "previous_designations",
     "personal_info",
     "academic_career",
     "business_income_source_professional_career",
@@ -35,6 +26,7 @@ const createCandidate = catchAsync(async (req, res) => {
     "social_links",
     "district",
     "division",
+    "existing_photos",
   ];
 
   jsonFields.forEach((field) => {
@@ -47,11 +39,46 @@ const createCandidate = catchAsync(async (req, res) => {
     }
   });
 
-  payload.photos = uploadedPhotos.map((photo) => ({
+  // Apply default for nationality if missing or empty
+  if (payload.personal_info) {
+    if (
+      !payload.personal_info.nationality ||
+      payload.personal_info.nationality.trim() === ""
+    ) {
+      payload.personal_info.nationality = "Bangladeshi";
+    }
+
+    // Merge social links
+    if (payload.social_links && Array.isArray(payload.social_links)) {
+      payload.personal_info.website_or_social = [
+        ...(payload.personal_info.website_or_social || []),
+        ...payload.social_links,
+      ];
+    }
+  }
+
+  const newPhotos = uploadedPhotos.map((photo) => ({
     secure_url: photo.secure_url || photo.url,
     public_id: photo.public_id,
     url: photo.url,
   }));
+
+  if (newPhotos.length > 0) {
+    payload.new_photos = newPhotos;
+  }
+
+  return payload;
+};
+const createCandidate = catchAsync(async (req, res) => {
+  const payload = await processCandidatePayload(req);
+
+  if (!payload.new_photos || payload.new_photos.length === 0) {
+    return res.status(400).json({
+      success: false,
+      message: "At least one photo is required",
+    });
+  }
+  payload.photos = payload.new_photos;
 
   const result = await CandidateService.createCandidate(payload);
 
@@ -86,10 +113,8 @@ const getCandidateById = catchAsync(async (req, res) => {
 });
 
 const updateCandidate = catchAsync(async (req, res) => {
-  const result = await CandidateService.updateCandidate(
-    req.params.id,
-    req.body
-  );
+  const payload = await processCandidatePayload(req);
+  const result = await CandidateService.updateCandidate(req.params.id, payload);
 
   sendResponse(res, {
     statusCode: 200,
