@@ -1,36 +1,56 @@
 import { Schema, model } from "mongoose";
 
+const personalInfoSchema = new Schema(
+  {
+    birth_date: String,
+    birth_place: {
+      type: String,
+      required: true,
+    },
+    nationality: {
+      type: String,
+      default: "Bangladeshi",
+    },
+    mobileNo: String,
+    website_or_social: [String],
+  },
+  { _id: false },
+);
 
+const academicCareerSchema = new Schema(
+  {
+    schools: [String],
+    college: String,
+    university: [String],
+    degree: [String],
+  },
+  { _id: false },
+);
 
-const personalInfoSchema = new Schema({
-  birth_date: String,
-  birth_place: String,
-  nationality: String,
-  website_or_social: [String],
-});
+const politicalCareerSchema = new Schema(
+  {
+    year: String,
+    event: String,
+  },
+  { _id: false },
+);
 
-const academicCareerSchema = new Schema({
-  schools: [String],
-  college: String,
-  university: [String],
-  degree: [String],
-});
+const electionConstituencySchema = new Schema(
+  {
+    actual_place_name: String,
+    election_area_name: String,
+  },
+  { _id: false },
+);
 
-const politicalCareerSchema = new Schema({
-  year: String,
-  event: String,
-});
-
-const electionConstituencySchema = new Schema({
-  actual_place_name: String,
-  election_area_name: String,
-});
-
-const photoSchema = new Schema({
-  secure_url: String,
-  public_id: String,
-  url: String,
-});
+const photoSchema = new Schema(
+  {
+    secure_url: String,
+    public_id: String,
+    url: String,
+  },
+  { _id: false },
+);
 
 const candidateSchema = new Schema(
   {
@@ -38,63 +58,68 @@ const candidateSchema = new Schema(
       type: String,
       required: true,
     },
-    position: {
+
+    designation: {
       type: String,
-      required: true,
+      default: "Party Leader",
     },
-    category: {
+
+    profession: {
       type: String,
-      required: true,
+      default: "Politician",
     },
+
     portfolio: {
       type: [String],
-      required: true,
     },
-    designations: {
+
+    previous_designations: {
       type: [String],
-      required: true,
     },
+
     personal_info: {
       type: personalInfoSchema,
       required: true,
     },
-    academic_career: {
-      type: academicCareerSchema,
-    },
-    business_income_source_professional_career: {
-      type: [String],
-    },
-    political_career: {
-      type: [politicalCareerSchema],
-    },
+
+    academic_career: academicCareerSchema,
+
+    business_income_source_professional_career: [String],
+
+    political_career: [politicalCareerSchema],
+
     election_constituencies: {
       type: [electionConstituencySchema],
       required: true,
     },
+
     life_activities: String,
+
     other_income_sources: [String],
-    social_links: [String],
+
     photos: {
       type: [photoSchema],
-      required: true,
+      default: [],
     },
+
     overall_summary: {
       type: String,
       required: true,
     },
+
     district: {
       type: [String],
       required: true,
     },
+
     division: {
       type: [String],
       required: true,
     },
-    metadata: Schema.Types.Mixed,
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const Candidate = model("Candidate", candidateSchema);
