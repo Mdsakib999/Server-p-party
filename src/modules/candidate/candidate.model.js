@@ -59,6 +59,16 @@ const candidateSchema = new Schema(
       required: true,
     },
 
+    isFeatured: {
+      type: Boolean,
+      default: false,
+    },
+
+    priorityOrder: {
+      type: Number,
+      default: 0,
+    },
+
     designation: {
       type: String,
       default: "Party Leader",

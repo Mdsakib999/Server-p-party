@@ -14,7 +14,12 @@ const createCandidate = async (payload) => {
 };
 
 const getAllCandidates = async (query = {}) => {
-  const candidates = await Candidate.find(query);
+  const candidates = await Candidate.find(query).sort({
+    isFeatured: -1, // featured (top leaders) first
+    priorityOrder: 1, // strict order among top leaders (1,2,3...)
+    createdAt: -1, // rest in normal order
+  });
+
   return candidates;
 };
 

@@ -5,7 +5,6 @@ import { AuthRoutes } from "../modules/auth/auth.routes.js";
 import { newsArticleRoutes } from "../modules/newsArticle/newsArticle.route.js";
 import { CandidateRoutes } from "../modules/candidate/candidate.route.js";
 import { activityRoutes } from "../modules/activity/activity.route.js";
-import frameEditorRoutes from "../modules/frame-editor/frame-editor.routes.js";
 
 export const router = Router();
 
@@ -33,10 +32,6 @@ const moduleRoutes = [
   {
     path: "/activity",
     element: activityRoutes,
-  },
-  {
-    path: "/frame-editor",
-    element: frameEditorRoutes,
   },
 ];
 
