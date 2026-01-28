@@ -133,4 +133,7 @@ const candidateSchema = new Schema(
 );
 
 const Candidate = model("Candidate", candidateSchema);
+
+candidateSchema.index({ isFeatured: -1, priorityOrder: 1, createdAt: -1 });
+
 export default Candidate;

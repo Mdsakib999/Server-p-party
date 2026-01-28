@@ -14,17 +14,19 @@ const createCandidate = async (payload) => {
 };
 
 const getAllCandidates = async (query = {}) => {
-  const candidates = await Candidate.find(query).sort({
-    isFeatured: -1, // featured (top leaders) first
-    priorityOrder: 1, // strict order among top leaders (1,2,3...)
-    createdAt: -1, // rest in normal order
-  });
+  const candidates = await Candidate.find(query)
+    .sort({
+      isFeatured: -1,
+      priorityOrder: 1,
+      createdAt: -1,
+    })
+    .lean();
 
   return candidates;
 };
 
 const getCandidateById = async (id) => {
-  const candidate = await Candidate.findById(id);
+  const candidate = await Candidate.findById(id).lean();
   if (!candidate) {
     throw new ApiError(404, "Candidate not found");
   }
