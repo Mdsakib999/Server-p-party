@@ -13,16 +13,29 @@ const createCandidate = async (payload) => {
   }
 };
 
-const getAllCandidates = async (query = {}) => {
+const getAllCandidates = async (query = {}, options = {}) => {
+  const page = options.page || 1;
+  const limit = options.limit || 9;
+  const skip = (page - 1) * limit;
+
   const candidates = await Candidate.find(query)
     .sort({
       isFeatured: -1,
       priorityOrder: 1,
       createdAt: -1,
     })
+    .skip(skip)
+    .limit(limit)
     .lean();
 
-  return candidates;
+  const total = await Candidate.countDocuments(query);
+
+  return {
+    data: candidates,
+    total,
+    page,
+    limit,
+  };
 };
 
 const getCandidateById = async (id) => {

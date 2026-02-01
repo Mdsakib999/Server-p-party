@@ -91,7 +91,27 @@ const createCandidate = catchAsync(async (req, res) => {
 });
 
 const getAllCandidates = catchAsync(async (req, res) => {
-  const result = await CandidateService.getAllCandidates(req.query);
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 9;
+
+  const query = {};
+
+  if (req.query.division) {
+    query.division = req.query.division;
+  }
+
+  if (req.query.district) {
+    query.district = req.query.district;
+  }
+
+  if (req.query.search) {
+    query.name = { $regex: req.query.search, $options: "i" };
+  }
+
+  const result = await CandidateService.getAllCandidates(query, {
+    page,
+    limit,
+  });
 
   sendResponse(res, {
     statusCode: 200,
