@@ -9,7 +9,6 @@ import cookieParser from "cookie-parser";
 import { router } from "./routes/router.js";
 import expressSession from "express-session";
 import notFound from "./middlewares/notFound.js";
-import { limiter } from "./middlewares/rateLimiter.js";
 import { envVariables } from "./config/envVariables.js";
 import globalErrorHandler from "./middlewares/globalErrorHandler.js";
 
@@ -20,7 +19,7 @@ app.use(
     secret: envVariables.EXPRESS_SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-  })
+  }),
 );
 
 app.use(passport.initialize());
@@ -47,11 +46,10 @@ app.use(
   cors({
     origin: envVariables.CLIENT_URL,
     credentials: true,
-  })
+  }),
 );
 
 app.use(morgan("dev"));
-app.use(limiter);
 app.use(compression());
 
 app.get("/", (_req, res) => {

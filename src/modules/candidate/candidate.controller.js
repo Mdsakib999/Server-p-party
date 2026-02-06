@@ -27,6 +27,12 @@ const processCandidatePayload = async (req) => {
     "district",
     "division",
     "existing_photos",
+    "district_bn",
+    "division_bn",
+    "business_income_source_professional_career_bn",
+    "other_income_sources_bn",
+    "portfolio_bn",
+    "previous_designations_bn",
   ];
 
   jsonFields.forEach((field) => {

@@ -5,6 +5,8 @@ import { AuthRoutes } from "../modules/auth/auth.routes.js";
 import { newsArticleRoutes } from "../modules/newsArticle/newsArticle.route.js";
 import { CandidateRoutes } from "../modules/candidate/candidate.route.js";
 import { activityRoutes } from "../modules/activity/activity.route.js";
+import { photoFrameRoutes } from "../modules/photoFrame/photoFrame.route.js";
+import { authLimiter, otpLimiter } from "../middlewares/rateLimiter.js";
 
 export const router = Router();
 
@@ -16,10 +18,12 @@ const moduleRoutes = [
   {
     path: "/otp",
     element: OtpRoutes,
+    middleware: otpLimiter,
   },
   {
     path: "/auth",
     element: AuthRoutes,
+    middleware: authLimiter,
   },
   {
     path: "/news-articles",
@@ -33,8 +37,16 @@ const moduleRoutes = [
     path: "/activity",
     element: activityRoutes,
   },
+  {
+    path: "/photo-frames",
+    element: photoFrameRoutes,
+  },
 ];
 
 moduleRoutes.forEach((route) => {
-  router.use(route.path, route.element);
+  if (route.middleware) {
+    router.use(route.path, route.middleware, route.element);
+  } else {
+    router.use(route.path, route.element);
+  }
 });

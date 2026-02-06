@@ -11,6 +11,10 @@ const personalInfoSchema = new Schema(
       type: String,
       default: "Bangladeshi",
     },
+    nationality_bn: {
+      type: String,
+      default: "বাংলাদেশি",
+    },
     mobileNo: String,
     website_or_social: [String],
   },
@@ -23,6 +27,9 @@ const academicCareerSchema = new Schema(
     college: String,
     university: [String],
     degree: [String],
+    college_bn: String,
+    university_bn: [String],
+    degree_bn: [String],
   },
   { _id: false },
 );
@@ -31,6 +38,7 @@ const politicalCareerSchema = new Schema(
   {
     year: String,
     event: String,
+    event_bn: String,
   },
   { _id: false },
 );
@@ -39,6 +47,8 @@ const electionConstituencySchema = new Schema(
   {
     actual_place_name: String,
     election_area_name: String,
+    actual_place_name_bn: String,
+    election_area_name_bn: String,
   },
   { _id: false },
 );
@@ -58,6 +68,9 @@ const candidateSchema = new Schema(
       type: String,
       required: true,
     },
+    name_bn: {
+      type: String,
+    },
 
     isFeatured: {
       type: Boolean,
@@ -73,10 +86,18 @@ const candidateSchema = new Schema(
       type: String,
       default: "Party Leader",
     },
+    designation_bn: {
+      type: String,
+      default: "দলীয় নেতা",
+    },
 
     profession: {
       type: String,
       default: "Politician",
+    },
+    profession_bn: {
+      type: String,
+      default: "রাজনীতিবিদ",
     },
 
     portfolio: {
@@ -98,6 +119,9 @@ const candidateSchema = new Schema(
 
     political_career: [politicalCareerSchema],
 
+    business_income_source_professional_career_bn: [String],
+    other_income_sources_bn: [String],
+
     election_constituencies: {
       type: [electionConstituencySchema],
       required: true,
@@ -116,6 +140,9 @@ const candidateSchema = new Schema(
       type: String,
       required: true,
     },
+    overall_summary_bn: {
+      type: String,
+    },
 
     district: {
       type: [String],
@@ -125,6 +152,12 @@ const candidateSchema = new Schema(
     division: {
       type: [String],
       required: true,
+    },
+    district_bn: {
+      type: [String],
+    },
+    division_bn: {
+      type: [String],
     },
   },
   {
