@@ -5,7 +5,7 @@ const ImageSchema = new Schema(
     url: { type: String, required: true },
     public_id: { type: String, required: true },
   },
-  { _id: false, versionKey: false }
+  { _id: false, versionKey: false },
 );
 
 const NewsArticleSchema = new Schema(
@@ -15,9 +15,13 @@ const NewsArticleSchema = new Schema(
     description: { type: String, default: "" },
     images: { type: [ImageSchema], default: [] },
     quote: { type: String, default: "" },
+    quote_bn: { type: String, default: "" },
     tags: { type: [String], default: [] },
+    tags_bn: { type: [String], default: [] },
+    title_bn: { type: String, trim: true },
+    description_bn: { type: String, default: "" },
   },
-  { timestamps: true, versionKey: false }
+  { timestamps: true, versionKey: false },
 );
 
 const NewsArticle = model("NewsArticle", NewsArticleSchema);

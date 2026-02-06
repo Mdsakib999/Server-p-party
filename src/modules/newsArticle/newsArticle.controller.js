@@ -16,7 +16,7 @@ const createArticle = catchAsync(async (req, res) => {
   }
 
   const uploadedImages = await Promise.all(
-    files.map((file) => uploadToCloudinary(file.buffer, "news-articles"))
+    files.map((file) => uploadToCloudinary(file.buffer, "news-articles")),
   );
 
   const payload = {
@@ -24,7 +24,11 @@ const createArticle = catchAsync(async (req, res) => {
     title: req.body.title?.trim(),
     description: req.body.description?.trim() || "",
     quote: req.body.quote?.trim() || "",
+    title_bn: req.body.title_bn?.trim(),
+    description_bn: req.body.description_bn?.trim() || "",
+    quote_bn: req.body.quote_bn?.trim() || "",
     tags: req.body.tags ? JSON.parse(req.body.tags) : [],
+    tags_bn: req.body.tags_bn ? JSON.parse(req.body.tags_bn) : [],
     images: uploadedImages,
   };
 
@@ -96,8 +100,8 @@ const updateArticle = catchAsync(async (req, res) => {
   const removedImages = currentArticle.images.filter(
     (currentImg) =>
       !existingImages.some(
-        (existingImg) => existingImg.public_id === currentImg.public_id
-      )
+        (existingImg) => existingImg.public_id === currentImg.public_id,
+      ),
   );
 
   if (removedImages.length > 0) {
@@ -106,7 +110,7 @@ const updateArticle = catchAsync(async (req, res) => {
   }
 
   const uploadedImages = await Promise.all(
-    files.map((file) => uploadToCloudinary(file.buffer, "news-articles"))
+    files.map((file) => uploadToCloudinary(file.buffer, "news-articles")),
   );
 
   const allImages = [...existingImages, ...uploadedImages];
@@ -120,7 +124,11 @@ const updateArticle = catchAsync(async (req, res) => {
     title: req.body.title?.trim(),
     description: req.body.description?.trim() || "",
     quote: req.body.quote?.trim() || "",
+    title_bn: req.body.title_bn?.trim(),
+    description_bn: req.body.description_bn?.trim() || "",
+    quote_bn: req.body.quote_bn?.trim() || "",
     tags: req.body.tags ? JSON.parse(req.body.tags) : [],
+    tags_bn: req.body.tags_bn ? JSON.parse(req.body.tags_bn) : [],
     images: allImages,
   };
 

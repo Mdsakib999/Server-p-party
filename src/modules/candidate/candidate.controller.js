@@ -27,6 +27,12 @@ const processCandidatePayload = async (req) => {
     "district",
     "division",
     "existing_photos",
+    "district_bn",
+    "division_bn",
+    "business_income_source_professional_career_bn",
+    "other_income_sources_bn",
+    "portfolio_bn",
+    "previous_designations_bn",
   ];
 
   jsonFields.forEach((field) => {
@@ -91,7 +97,27 @@ const createCandidate = catchAsync(async (req, res) => {
 });
 
 const getAllCandidates = catchAsync(async (req, res) => {
-  const result = await CandidateService.getAllCandidates(req.query);
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 9;
+
+  const query = {};
+
+  if (req.query.division) {
+    query.division = req.query.division;
+  }
+
+  if (req.query.district) {
+    query.district = req.query.district;
+  }
+
+  if (req.query.search) {
+    query.name = { $regex: req.query.search, $options: "i" };
+  }
+
+  const result = await CandidateService.getAllCandidates(query, {
+    page,
+    limit,
+  });
 
   sendResponse(res, {
     statusCode: 200,
