@@ -29,26 +29,24 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// CORS configuration
-const corsOptions = {
-  origin: envVariables.CLIENT_URL || "http://localhost:5173",
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization", "x-requested-with"],
-  exposedHeaders: ["Content-Range", "X-Content-Range"],
-  maxAge: 600,
-};
-
-app.use(cors(corsOptions));
-app.use(helmet());
+const allowedOrigins = envVariables.CLIENT_URL.split(",").map((o) => o.trim());
 
 app.use(
   cors({
-    origin: envVariables.CLIENT_URL,
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   }),
 );
 
+app.use(helmet());
 app.use(morgan("dev"));
 app.use(compression());
 
