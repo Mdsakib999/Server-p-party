@@ -16,6 +16,14 @@ const photoFrameSchema = new Schema(
         "Sylhet",
       ],
     },
+    district: {
+      type: String,
+      required: true,
+    },
+    constituency: {
+      type: String,
+      required: true,
+    },
     url: {
       type: String,
       required: true,
