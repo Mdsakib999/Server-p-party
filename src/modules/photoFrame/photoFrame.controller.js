@@ -8,7 +8,7 @@ import {
 import ApiError from "../../utils/ApiError.js";
 
 const createFrame = catchAsync(async (req, res) => {
-  const { division } = req.body;
+  const { division, district, constituency } = req.body;
 
   if (!req.file) {
     throw new Error("Please upload an image");
@@ -18,6 +18,8 @@ const createFrame = catchAsync(async (req, res) => {
 
   const frame = await PhotoFrame.create({
     division,
+    district,
+    constituency,
     url: result.url,
     public_id: result.public_id,
   });
@@ -31,10 +33,16 @@ const createFrame = catchAsync(async (req, res) => {
 });
 
 const getAllFrames = catchAsync(async (req, res) => {
-  const { division } = req.query;
+  const { division, district, constituency } = req.query;
   const query = {};
   if (division) {
     query.division = division;
+  }
+  if (district) {
+    query.district = district;
+  }
+  if (constituency) {
+    query.constituency = constituency;
   }
   const frames = await PhotoFrame.find(query).sort("-createdAt");
   sendResponse(res, {
@@ -69,7 +77,7 @@ const deleteFrame = catchAsync(async (req, res) => {
 
 const updateFrame = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const { division } = req.body;
+  const { division, district, constituency } = req.body;
   const file = req.file;
 
   const frame = await PhotoFrame.findById(id);
@@ -79,6 +87,8 @@ const updateFrame = catchAsync(async (req, res) => {
 
   const updateData = {};
   if (division) updateData.division = division;
+  if (district) updateData.district = district;
+  if (constituency) updateData.constituency = constituency;
 
   if (file) {
     // Delete old image
