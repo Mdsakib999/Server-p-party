@@ -5,7 +5,7 @@ const personalInfoSchema = new Schema(
     birth_date: String,
     birth_place: {
       type: String,
-      required: true,
+      // required: true,
     },
     nationality: {
       type: String,
@@ -110,7 +110,7 @@ const candidateSchema = new Schema(
 
     personal_info: {
       type: personalInfoSchema,
-      required: true,
+      // required: true,
     },
 
     academic_career: academicCareerSchema,
@@ -138,7 +138,7 @@ const candidateSchema = new Schema(
 
     overall_summary: {
       type: String,
-      required: true,
+      // required: true,
     },
     overall_summary_bn: {
       type: String,

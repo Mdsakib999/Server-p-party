@@ -78,12 +78,12 @@ const processCandidatePayload = async (req) => {
 const createCandidate = catchAsync(async (req, res) => {
   const payload = await processCandidatePayload(req);
 
-  if (!payload.new_photos || payload.new_photos.length === 0) {
+  /*if (!payload.new_photos || payload.new_photos.length === 0) {
     return res.status(400).json({
       success: false,
       message: "At least one photo is required",
     });
-  }
+  }*/
   payload.photos = payload.new_photos;
 
   const result = await CandidateService.createCandidate(payload);
